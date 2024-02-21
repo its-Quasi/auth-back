@@ -6,12 +6,15 @@ import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcryptjs'
 import { LoginDto } from './dto/login.dto';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from './interfaces/jwtPayload';
 
 @Injectable()
 export class AuthService {
 
   constructor(
-    @InjectModel(User.name) private userModel: Model<User>
+    @InjectModel(User.name) private userModel: Model<User>,
+    private jwtService: JwtService
   ) {
 
   }
@@ -42,30 +45,34 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Not Valid Email')
     }
-    if(!bcrypt.compareSync(password,  user.password)) {
+    if (!bcrypt.compareSync(password, user.password)) {
       throw new UnauthorizedException('Not Valid Password')
     }
-    const {password:ignore, ...rest} = user.toJSON()
-    
+    const { password: ignore, ...rest } = user.toJSON()
+
     return {
       ...rest,
-      token: 'randomtoken'
+      token: await this.getToken({ id: user.id })
     }
   }
 
-    findAll() {
-      return `This action returns all auth`;
-    }
-
-    findOne(id: number) {
-      return `This action returns a #${id} auth`;
-    }
-
-    update(id: number, updateAuthDto: UpdateAuthDto) {
-      return `This action updates a #${id} auth`;
-    }
-
-    remove(id: number) {
-      return `This action removes a #${id} auth`;
-    }
+  getToken(payload: JwtPayload) {
+    return this.jwtService.signAsync(payload)
   }
+
+  findAll() {
+    return `This action returns all auth`;
+  }
+
+  findOne(id: number) {
+    return `This action returns a #${id} auth`;
+  }
+
+  update(id: number, updateAuthDto: UpdateAuthDto) {
+    return `This action updates a #${id} auth`;
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} auth`;
+  }
+}
