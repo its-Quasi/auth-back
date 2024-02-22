@@ -8,6 +8,7 @@ import * as bcrypt from 'bcryptjs'
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwtPayload';
+import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
@@ -45,14 +46,26 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Not Valid Email')
     }
+
     if (!bcrypt.compareSync(password, user.password)) {
       throw new UnauthorizedException('Not Valid Password')
     }
+
     const { password: ignore, ...rest } = user.toJSON()
 
     return {
       ...rest,
       token: await this.getToken({ id: user.id })
+    }
+  }
+
+  async register(registerData: RegisterDto) {
+    const newUser = await this.create(registerData)
+    const { password, ...rest } = newUser
+    const { id } = await this.userModel.findOne({ email: registerData.email })
+    return {
+      ...rest,
+      token: await this.getToken({ id })
     }
   }
 
