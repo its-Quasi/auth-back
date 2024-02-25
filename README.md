@@ -35,6 +35,12 @@ $ npm install
 ## Running the app
 
 ```bash
+# env vars
+rename `.env.template` to `.env` and assign values to each var 
+
+# services
+$ docker compose up -d
+
 # development
 $ npm run start
 
