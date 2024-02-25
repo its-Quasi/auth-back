@@ -35,7 +35,7 @@ $ npm install
 ## Running the app
 
 ```bash
-# env vars
+# env vars 
 rename `.env.template` to `.env` and assign values to each var 
 
 # services
