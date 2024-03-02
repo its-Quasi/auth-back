@@ -80,7 +80,7 @@ export class AuthService {
   
   async findById(id : string) {
     const user = await this.userModel.findById(id)
-    const {password, _id, ...rest} = user.toJSON(); // exclude pass and id
+    const {password, ...rest} = user.toJSON(); // exclude pass and id
     return rest
   }
 
@@ -92,7 +92,7 @@ export class AuthService {
     return `This action removes a #${id} auth`;
   }
 
-  private getToken(payload: JwtPayload) {
+  getToken(payload: JwtPayload) {
     return this.jwtService.signAsync(payload)
   }
 }
